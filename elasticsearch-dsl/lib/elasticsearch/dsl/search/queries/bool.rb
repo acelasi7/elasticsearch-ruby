@@ -41,7 +41,11 @@ module Elasticsearch
 
           def must(*args, &block)
             @hash[name][:must] ||= []
-            value = Query.new(*args, &block).to_hash
+            if args.first.instance_of? Elasticsearch::DSL::Search::Queries::Bool
+              value = args.first.to_hash
+            else
+              value = Query.new(*args, &block).to_hash
+            end
             @hash[name][:must].push(value).flatten! unless @hash[name][:must].include?(value)
             self
           end
